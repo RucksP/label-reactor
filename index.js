@@ -3,29 +3,18 @@
  * @param {import('probot').Application} app
  */
 module.exports = app => {
-  // Your code here
+  
   app.log('Yay, the app was loaded!')
 
-  app.on('issues.opened', async context => {
-    app.log('an issue was opened')
-    const issueComment = context.issue({ body: 'Thanks for opening this issue! version 2' })
-    return context.github.issues.createComment(issueComment)
-  })
-
-
-  
+  //on PR labeled event
   app.on('pull_request.labeled', async context => {
 
-
-    app.log('a PR was labeled')
     const params = context.issue({})
 
-
-    
-    
-
+    //store the label name as a string
     const label_name = await context.payload.label.name
 
+    //depending on what the label was do an action
     switch(label_name) {
       case 'bug':
         //do something
@@ -36,22 +25,27 @@ module.exports = app => {
         //do something
     }
 
+    //check if enough people have approved the request
     approved = await checkApproved(context, params)
-    //app.log(approved)
+    
+    //merge the PR if it has been approved by enough people
     if(approved) {
-      app.log('this PR is approved')
-      //return merge(context, params)
+      //app.log('this PR is approved')
+      return merge(context, params)
     }
     return
   })
 
 
+  /**Function to check if a Pull Request has been approved for merge
+   * 
+   * @param {*} context 
+   * @param {*} params 
+   */
    async function checkApproved(context, params) {
 
     const reviews = await context.github.pulls.listReviews(params)
     const count = await reviews.data.filter(review => review.state == 'APPROVED').length
-    //app.log(count)
-
     if(count >= 2) {
       return true
     } else {
@@ -60,11 +54,14 @@ module.exports = app => {
     
   }
 
+  /**Function to merge Pull Request
+   * 
+   * @param {*} context 
+   * @param {*} params 
+   */
   async function merge(context, params) {
     return context.github.pulls.merge(params)
   }
-
-
 
   // For more information on building apps:
   // https://probot.github.io/docs/
