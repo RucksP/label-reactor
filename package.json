@@ -1,8 +1,8 @@
 {
-  "name": "git-label",
+  "name": "label-reactor",
   "version": "1.0.0",
   "private": true,
-  "description": "A bot which will commit actions automatically once PR are labled",
+  "description": "A bot which will commit actions automatically once PR are labeled and approved",
   "author": "Rohan Patel <rspatel014@gmail.com>",
   "license": "ISC",
   "repository": "https://github.com/RucksP/git-PR-label.git",
